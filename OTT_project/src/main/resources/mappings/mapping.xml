@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Mapper">
+
+
+	<!-- 관리자 -->
+	
+	<!-- 전체 목록 -->
+	<select id="getOttList" resultType="ott">
+		SELECT * FROM ott
+		ORDER BY id DESC
+	</select>
+	
+	<!-- 등록 -->
+	<insert id="insertOtt"  parameterType="ott">
+	<![CDATA[
+	INSERT INTO ott(id, title, genre, director, actor, poster, image, content, server)
+	VALUES(ott_seq.NEXTVAL, #{title}, #{genre}, #{director}, #{actor},#{poster}, #{image}, #{content}, #{server})
+	]]>
+	</insert>
+	
+	<!-- 수정 -->
+	<update id="updateOtt" parameterType="ott">
+		UPDATE ott SET title=#{title}, genre=#{genre}, director=#{director},
+		 actor=#{actor}, poster=#{poster}, image=#{image}, content=#{content}, server=#{server}
+		WHERE id=#{id}
+	</update>
+	<!-- 삭제-->
+   <delete id="deleteOtt" parameterType="ott">
+      DELETE ott WHERE id=#{id}
+   </delete>
+
+	<!-- 상세조회 -->
+	<select id="getOtt" resultType="ott">
+		SELECT * FROM ott WHERE id=#{id}
+	</select>
+
+
+
+
+
+
+	<update id="upCnt" parameterType="ott">
+		UPDATE ott SET cnt = cnt+1 WHERE id = #{id}
+	</update>
+	
+	
+	<select id="getFav" parameterType="fav" resultType="int">
+		SELECT count(*) FROM favorite WHERE user_id=#{user_id} AND ott_id = #{ott_id}
+	</select>
+	
+	<insert id="insFav" parameterType="fav">
+		INSERT INTO favorite VALUES(fav_seq.NEXTVAL, #{user_id},#{ott_id})
+	</insert>
+	
+	<delete id="delFav" parameterType="fav">
+		DELETE FROM favorite WHERE user_id = #{user_id} AND ott_id = #{ott_id}
+	</delete>
+	
+	<select id="getOttList_D" resultType="ott">
+		SELECT * FROM ott 
+		WHERE 1 = 1
+		<if test="searchCondition=='TITLE'">
+			AND title LIKE '%'||#{searchKeyword}||'%'
+		</if>
+		<if test="searchCondition=='CONTENT'">
+			AND content LIKE '%'||#{searchKeyword}||'%'
+		</if>
+		ORDER BY cnt DESC
+	</select>
+	
+	<select id="getOttDramaList" resultType="ott">
+		SELECT * FROM ott 
+		WHERE  genre = '드라마' 
+		ORDER BY cnt DESC
+	</select>
+	
+	<select id="getOttActionList" resultType="ott">
+		SELECT * FROM ott 
+		WHERE  genre = '액션/스릴러' 
+		ORDER BY cnt DESC
+	</select>
+	
+	<select id="getOttRomanceList" resultType="ott">
+		SELECT * FROM ott 
+		WHERE  genre = '멜로/로맨스' 
+		ORDER BY cnt DESC
+	</select>
+	
+	<select id="getFavorite" resultType="ott">
+		SELECT * FROM ott o, favorite f
+		WHERE o.id = f.ott_id AND f.user_id= #{user_id}
+		ORDER BY f.seq DESC 
+	</select>
+	
+	
+	<select id="getUser" resultType="user">
+	
+		SELECT user_id,password,role FROM ott_user WHERE user_id=#{user_id}
+	
+	</select>
+	<insert id="insertUser" parameterType="user">
+	
+		INSERT INTO ott_user VALUES(#{user_id}, #{password}, #{role})
+	
+	</insert>
+	<select id="idCheck" parameterType="String" resultType="user">
+	
+		SELECT * FROM ott_user WHERE user_id =#{user_id}
+	
+	</select>
+	
+	
+	
+
+</mapper>
+
+
+
+
+
+
+
+
+
